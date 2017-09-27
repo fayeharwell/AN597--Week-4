@@ -172,3 +172,26 @@ l = 20
 probset <- dpois(x = x, lambda = l)
 barplot(probset, names.arg = x, space = 0, xlab = "x", ylab = "Pr(X = x)", main = "Probability Mass Function")
 ```
+
+### As we did for other distributions, we can also use the built in probability function for the Poisson distribution, ppois(), to return the value of the cumulative distribution function, i.e., the probability of observing up to and including a specific number of events in the given interval.
+
+```{r}
+x <- 0:10
+l <- 3.5
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x", 
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+```{r}
+x <- 0:20
+l <- 10
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x", 
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
+
+```{r}
+x <- 0:50
+l <- 20
+barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x", 
+    ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
+```
