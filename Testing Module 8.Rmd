@@ -195,3 +195,201 @@ l <- 20
 barplot(ppois(q = x, lambda = l), ylim = 0:1, space = 0, names.arg = x, xlab = "x", 
     ylab = "Pr(X ≤ x)", main = "Cumulative Probability")
 ```
+
+## Uniform Distribution
+
+### The Uniform Distribution is the simplest probability density function describing a continuous random variable. The probability is uniform and does not fluctuate across the range of xx values in a given interval.
+
+### Here is an example given a range of a=4 to b=8... (In this example, the cumulative density function increases linearly over the given interval)
+
+```{r}
+a <- 4
+b <- 8
+x <- seq(from = a - (b - a), to = b + (b - a), by = 0.01)
+fx <- dunif(x, min = a, max = b)  # dunif() evaluates the density at each x
+plot(x, fx, type = "l", xlab = "x", ylab = "f(x)", main = "Probability Density Function")
+```
+### Let's demonstrate the first deviation of this uniform probability graph
+
+```{r}
+plot(x, punif(q = x, min = a, max = b), type = "l", xlab = "x", ylab = "Pr(X ≤ x)", main = "Cumulative Probability") 
+
+# punif() is the cumulative probability density up to a given x
+```
+
+#Normal Distribution
+
+### The Normal or Gaussian Distribution is perhaps the most familiar and most commonly applied probability density functions for modeling continuous random variables. Why is the normal so important? Many traits are normally distributed, and the additive combination of many random factors is also commonly normally distributed.
+
+### Two parameters, μμ and σσ, are used to describe a normal distribution.
+
+### Here is what a normal distribution looks like:
+
+```{r}
+mu <- 4
+sigma <- 1.5
+curve(dnorm(x, mu, sigma), mu - 4 * sigma, mu + 4 * sigma, main = "Normal Curve", 
+    xlab = "x", ylab = "f(x)")
+```
+
+### The function, dnorm() gives the point value of the normal density function at a given value of x. x can range from -∞ to +∞. Recall, it does not make sense to talk about the “probability” associated with a given value of x as this is a density not a mass function, but we can talk about the probability of x falling within a given interval.
+
+```{r}
+manipulate(plot(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000), 
+    dnorm(seq(from = (mu - 4 * sigma), to = (mu + 4 * sigma), length.out = 1000), 
+        mean = mu, sd = sigma), type = "l", xlim = c(mu - 4 * sigma, mu + 4 * 
+        sigma), xlab = "x", ylab = "f(x)", main = "Normal Probability Density Function") + 
+    polygon(rbind(c(mu - nsigma * sigma, 0), cbind(seq(from = (mu - nsigma * 
+        sigma), to = (mu + nsigma * sigma), length.out = 1000), dnorm(seq(from = (mu - 
+        nsigma * sigma), to = (mu + nsigma * sigma), length.out = 1000), mean = mu, 
+        sd = sigma)), c(mu + nsigma * sigma, 0)), border = NA, col = "salmon") + 
+    abline(v = mu, col = "blue") + abline(h = 0) + abline(v = c(mu - nsigma * 
+    sigma, mu + nsigma * sigma), col = "salmon"), mu = slider(-10, 10, initial = 0, 
+    step = 0.25), sigma = slider(0.25, 4, initial = 1, step = 0.25), nsigma = slider(0, 
+    4, initial = 0, step = 0.25))
+```
+
+### The pnorm() function, as with the p- variant function for other distributions, returns the cumulative probability of observing a value less than or equal to x, i.e., Pr (X(X ≤≤ x)x). Type in the code below and then play with values of μ and σ to look at how the cumulative distibution function changes.
+
+```{r}
+manipulate(plot(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000), pnorm(seq(from = (mu - 6 * sigma), to = (mu + 6 * sigma), length.out = 1000), mean = mu, sd = sigma), type = "l", xlim = c(-20, 20), xlab = "x", ylab = "f(x)", main = "Cumulative Probability"), mu = slider(-10, 10, initial = 0, step = 0.25), sigma = slider(0.25, 10, initial = 1, step = 0.25)) 
+# plots the cumulative distribution function
+```
+
+### You can also use pnorm() to calculate the probability of an observation drawn from the population falling within a particular interval. For example, for a normally distributed population variable with μμ = 6 and σσ = 2, the probability of a random observation falling between 7 and 8 is…
+
+```{r}
+p <- pnorm(8, mean = 6, sd = 2) - pnorm(7, mean = 6, sd = 2)
+p
+```
+
+### Likewise, you can use pnorm() to calculate the probability of an observation falling, for example within 2 standard deviations of the mean of a particular normal distribution.
+
+```{r}
+mu <- 0
+sigma <- 1
+p <- pnorm(mu + 2 * sigma, mean = mu, sd = sigma) - pnorm(mu - 2 * sigma, mean = mu, 
+    sd = sigma)
+p
+```
+
+### CHALLENGE: Create a vector, v, containing n random numbers selected from a normal distribution with mean μμ and standard deviation σσ. Use 1000 for n, 3.5 for μμ, and 4 for σσ. HINT: Such a function exists! rnorm().
+
+```{r}
+n <- 1000
+mu <- 3.5
+sigma <- 4
+v <- rnorm(n, mu, sigma)
+mean(v)
+var(v)
+sd(v)
+hist(v, breaks = seq(from = -15, to = 20, by = 0.5), probability = TRUE)
+```
+
+# Q-Q Plots
+
+### A quantile-quantile or “Q-Q” plot can be used to look at whether a set of data seem to follow a normal distribution. A Q–Q plot is a graphical method for generally comparing two probability distributions. To examine a set of data for normality graphically, you plot the quantiles for your actual data (as the y values) versus the theoretical quantiles (as the x values) pulled from a normal distribution. If the two distributions being compared are similar, the points in the plot will approximately lie on the line y = x.
+
+### To quickly do a Q-Q plot, call the two R functions qqnorm() and qqline() using the vector of data you want to examine as an argument.
+
+```{r}
+qqnorm(v, main = "Normal QQ plot random normal variables")
+qqline(v, col = "gray")
+```
+
+### There is another way to generate a Q-Q Plot... Unfortunately, it takes a little bit longer
+
+### Step 1: Generate a sequence of probability points in the interval from 0 to 1 equivalent in length to vector v
+
+```{r}
+p <- ppoints(length(v))
+head(p)
+tail(p)
+```
+
+### Step 2: Calculate the theoretical quantiles for this set of probabilities based on a the distribution you want to compare to (in this case, the normal distribution)
+
+```{r}
+theoretical_q <- qnorm(ppoints(length(v)))
+```
+
+### Step 3: Calculate the quantiles for your set of observed data for the same number of points
+
+```{r}
+observed_q <- quantile(v, ppoints(v))
+```
+
+### Step 4: Plot these quantiles against one another
+
+```{r}
+plot(theoretical_q, observed_q, main = "Normal QQ plot random normal variables", 
+    xlab = "Theoretical Quantiles", ylab = "Sample Quantiles")
+```
+
+# The "Standard Normal" Distribution
+
+### Any normal distribution with mean μ and standard deviation σ can be converted into what is called the standard normal distribution, where the mean is zero and the standard deviation is 1. This is done by subtracting the mean from all observations and dividing these differences by the standard deviation. The resultant values are referred to as Z scores, and they reflect the number of standard deviations an observation is from the mean.
+
+### Look at this histogram of a normal distribution
+
+```{r}
+x <- rnorm(10000, mean = 5, sd = 8)  # simulate from a normal distribution with mean 5 and SD 8
+hist(x)
+```
+
+### Now, here is the mean, standard deviation, and a plot of z scores
+
+```{r}
+mean(x)
+sd(x)
+z <- (x - mean(x))/sd(x)  # standardized!
+hist(z)
+```
+
+### EXAMPLE: Let’s imagine a population of 1 million zombies whose age at zombification is characterized by a normal distribution with a mean of 25 years and a standard deviation of 5 years. Below, we set up our population:
+
+```{r}
+set.seed(1)
+x <- rnorm(1e+06, 25, 5)
+hist(x, probability = TRUE)
+```
+
+```{r}
+mu <- mean(x)
+mu
+```
+
+```{r}
+sigma <- sqrt(sum((x - mean(x))^2)/length(x))
+```
+
+#### Suppose we now sample the zombie population by trapping sets of zombies and determining the mean age in each set. We sample without replacement from the original population for each set. Let’s do that 100 times with samples of size 5 and store these in a list.
+
+```{r}
+k <- 1000  # number of samples
+n <- 5  # size of each sample
+s <- NULL  # dummy variable to hold each sample
+for (i in 1:k) {
+    s[[i]] <- sample(x, size = n, replace = FALSE)
+}
+head(s)
+```
+
+### For each of these samples, we can then calculate a mean age, which is a statistic describing each sample. That statistic itself is a random variable with a mean and distribution. This is the sampling distribution. How does the sampling distribution compare to the population distribution? The mean of the two is pretty close to the same! The sample mean - which is an average of the set of sample averages - is an unbiased estimator for the population mean.
+
+```{r}
+stdev <- NULL
+for (i in 1:k) {
+    stdev[i] <- sd(s[[i]])
+}
+sem <- stdev/sqrt(n)  # a vector of SEs estimated from each sample 
+head(sem)
+```
+
+```{r}
+mean(sem)
+```
+
+```{r}
+pop_se
+```
